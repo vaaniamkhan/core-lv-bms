@@ -1,4 +1,4 @@
-PROJECT_NAME := template
+PROJECT_NAME := 
 PROJECT_VERSION := f33
 
 # Build info
