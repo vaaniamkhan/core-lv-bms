@@ -1,5 +1,5 @@
-PROJECT_NAME := 
-PROJECT_VERSION := f33
+PROJECT_NAME := core-bms
+PROJECT_VERSION := f34
 
 # Build info
 BUILD_DIR := build
@@ -25,12 +25,14 @@ STM32_LD_FLAGS := $(STM32_COMMON_FLAGS) -static -Wl,--gc-sections -T $(STM32_LD_
 # Sources
 APP_DIR := src/app
 APP_SRCS := $(shell find $(APP_DIR) -type f -name "*.c")
-APP_INCLUDE := -I $(APP_DIR)
+APP_INCLUDE := $(shell find $(APP_DIR) -type d)
+APP_INCLUDE := -I $(APP_DIR) $(foreach dir, $(APP_INCLUDE), -I $(dir))
 STM32_APP_OBJS := $(APP_SRCS:$(APP_DIR)/%=$(STM32_BUILD_DIR)/obj/app/%.o)
 
 DRIVER_DIR := src/driver
 DRIVER_SRCS := $(shell find $(DRIVER_DIR) -type f -name "*.c")
-DRIVER_INCLUDE := -I $(DRIVER_DIR)
+DRIVER_INCLUDE := $(shell find $(DRIVER_DIR) -type d)
+DRIVER_INCLUDE := -I $(DRIVER_DIR) $(foreach dir, $(DRIVER_INCLUDE), -I $(dir))
 STM32_DRIVER_OBJS := $(DRIVER_SRCS:$(DRIVER_DIR)/%=$(STM32_BUILD_DIR)/obj/driver/%.o)
 
 # Libraries
@@ -87,7 +89,7 @@ $(OUTNAME).bin: $(OUTNAME).elf
 
 $(OUTNAME).elf: $(STM32_APP_OBJS) $(STM32_DRIVER_OBJS) $(STM32CUBE_OBJS) $(FREERTOS_OBJS) $(CORE_OBJS) $(RTT_OBJS) $(DBC_OBJS)
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(STM32_LD) $(STM32_LD_FLAGS) $^ -o $@ -lc -lm
+	$(STM32_LD) $(STM32_LD_FLAGS) $^ -o $@
 
 $(OUTNAME).ihex: $(OUTNAME).elf
 	@[ -d $(@D) ] || mkdir -p $(@D)
@@ -101,7 +103,7 @@ $(STM32_BUILD_DIR)/obj/app/%.c.o: $(APP_DIR)/%.c
 # driver objects
 $(STM32_BUILD_DIR)/obj/driver/%.c.o: $(DRIVER_DIR)/%.c
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(STM32_CC) $(STM32_CC_FLAGS) -I src $(DRIVER_INCLUDE) $(STM32CUBE_INCLUDES) $(CORE_INCLUDES) $(RTT_INCLUDES) $(DBC_INCLUDES) -c $< -o $@
+	$(STM32_CC) $(STM32_CC_FLAGS) -I src $(DRIVER_INCLUDE) $(APP_INCLUDE) $(STM32CUBE_INCLUDES) $(CORE_INCLUDES) $(RTT_INCLUDES) $(DBC_INCLUDES) -c $< -o $@
 
 # stm32cube objects
 $(STM32_BUILD_DIR)/obj/stm32cube/%.c.o: $(STM32CUBE_DIR)/%.c
