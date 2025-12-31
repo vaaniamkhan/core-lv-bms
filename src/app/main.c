@@ -1,14 +1,14 @@
-#include "main.h"
+#include "main.h" // not used?
 
 #include <stdbool.h>
 #include <stdio.h>
 
 #include "can.h"
-#include "clock.h"
+#include "clock.h" // not used?
 #include "gpio.h"
-#include "error_handler.h"
+#include "error_handler.h" // not used?
 #include "boot.h"
-#include "core_config.h"
+#include "core_config.h" // not used?
 
 #include "FreeRTOS.h"
 #include "queue.h"
@@ -16,6 +16,14 @@
 
 #include <stm32g4xx_hal.h>
 
+#include "BMS.h"
+#include "AppCAN.h"
+
+#define TASK_PRIORITY_HEARTBEAT (tskIDLE_PRIORITY + 1)
+#define CAN_RX_PRIORITY (tskIDLE_PRIOIRITY + 2)
+#define CAN_TX_PRIORITY (tskIDLE_PRIOIRITY + 2)
+
+void hardfault_error_handler();
 
 void heartbeat_task(void *pvParameters) {
     (void) pvParameters;
@@ -38,7 +46,7 @@ int main(void) {
 
     int err = xTaskCreate(heartbeat_task, "heartbeat", 1000, NULL, 4, NULL);
     if (err != pdPASS) {
-        error_handler();
+        error_handler(); // change error handler?
     }
 
     NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
@@ -47,7 +55,7 @@ int main(void) {
     vTaskStartScheduler();
 
     // we should not get here ever
-    error_handler();
+    error_handler(); // change error handler?
     return 1;
 }
 
@@ -58,4 +66,11 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName) {
     (void) pcTaskName;
 
     error_handler();
+}
+
+void hardfault_error_handler() { // use vs template's error_handler()?
+    while(1) {
+        core_GPIO_toggle_heartbeat();
+        for (unsigned long long i = 0; i < 200000; i++); // max val?
+    }
 }
