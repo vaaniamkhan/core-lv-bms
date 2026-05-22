@@ -316,6 +316,44 @@
  */
 #define CORE_TIMEOUT_NUM 10
 
+/********************* WATCHDOG PARAMETERS *********************/
+/***************************************************************/
 
+// Timeout formula: timeout = (APB_clock_period(ms)) * 4096 * (2^(CORE_WATCHDOG_PRESCALER)) * (CORE_WATCHDOG_RELOAD_VAL + 1) ms
+// APB clock set to system clock = 160MHz by default. APB_clock_period = 6.25ns = 6.25*10^(-6) ms
+// Downcounter is 7 bits. When the lower 6 bits go to 0 (timer = 0x40), the interrupt is triggered if it is set.
+// When the counter goes to 0x3F, the system reset is triggered.
+
+
+// /**
+//  * @brief Timebase of prescaler. 3 bits (max 7)
+//  */
+// #define CORE_WATCHDOG_PRESCALER 6
+//
+// /**
+//  * @brief Lower 6 bits to reload into the downcounter. 6 bits (max 63)
+//  */
+// #define CORE_WATCHDOG_RELOAD_VAL 63
+//
+// /**
+//  * @brief Watchdog window. Must refresh when downcounter has counted lower than this number
+//  * for the refresh to be valid. If not, it will be reset. Must be greater than 0x40 to matter. 7 bits (max 63)
+//  */
+// #define CORE_WATCHDOG_WINDOW_VAL 3
+
+/**
+ * @brief Prescaler for watchdog timer driven by LSI (32kHz).
+ * Frequency = 32kHz/(2^(CORE_WATCHDOG_PRESCALER + 2)). 3 bits (max 7)
+ */
+#define CORE_WATCHDOG_PRESCALER         6
+/**
+ * @brief Value that will be loaded into the watchdog counter upon reload. 11 bits (max 2047)
+ */
+#define CORE_WATCHDOG_RELOAD_VAL           500
+/**
+ * @brief Watchdog window. Must refresh when downcounter has counted lower than this number
+ * for the refresh to be valid. If not, it will be reset 11 bits (max 2047)
+ */
+#define CORE_WATCHDOG_WINDOW_VAL           250
 
 #endif //CORE_CORE_CONFIG_H

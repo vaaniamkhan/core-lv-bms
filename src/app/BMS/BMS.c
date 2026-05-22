@@ -11,6 +11,7 @@
 #include "can.h"
 #include "timeout.h"
 #include "boot.h"
+#include "watchdog.h"
 
 #include "config.h"
 #include "AppGPIO.h"
@@ -35,14 +36,19 @@ bool LVBMS_init()
     if (!M17_init()) return false;
     if (!ADES_init()) return false;
 
+    // rprintf("Here %08x\n", *((uint32_t*)0x20017ffc));
+    // if ((*((uint32_t*)0x20017ffc)) & 0x10) {
+    //     core_GPIO_digital_write(STM_ENA_PORT, STM_ENA_PIN, 0);
+    // }
+
     PackMonitor_init();
     CAN_init();
+    core_boot_init();
     ChargeMonitor_init();
     CurrentMonitor_init();
     core_timeout_start_all();
-    
-    return true;
-    
+    core_watchdog_init(false, NULL); 
+    return true;    
 }
 
 bool LVBMS_1Hz()
@@ -50,12 +56,13 @@ bool LVBMS_1Hz()
     ChargeMonitor_task_update();
     PackMonitor_task_update();
     FaultManager_task_update();
-    CurrentMonitor_task_update();
     return true;
 }
 
 bool LVBMS_1kHz()
 {
+    CurrentMonitor_task_update();
     core_timeout_check_all();
+    core_watchdog_refresh();
     return true;
 }

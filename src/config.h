@@ -46,7 +46,7 @@
 
 /*** MEASUREMENTS ***/
 #define CELL_VOLT_IRR_LOW_V 2.0f
-#define CELL_MIN_V 3.2f
+#define CELL_MIN_V 3.1f
 #define CELL_FULL_MIN_V 4.34f
 #define CELL_FULL_MAX_V 4.35f
 #define CELL_VOLT_IRR_HIGH_V 4.5f
@@ -75,3 +75,6 @@
 #define CS_OFFSET_VOLTAGE 2.5f
 #define CS_GAIN 250.0f
 #define CS_IRR_L -200.0f
+#define CS_SHUTOFF_LOW -0.08f
+#define CS_SHUTOFF_HIGH 0.08f
+#define CS_SHUTOFF_COUNT 5000

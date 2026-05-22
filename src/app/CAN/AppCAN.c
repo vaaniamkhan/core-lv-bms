@@ -68,7 +68,7 @@ bool CAN_send_pack_data()
 
 bool CAN_pack_and_send_current(float current)   // not currently being sent
 {
-    int64_t msg = sensor_dbc_lvbms_current_bms_inst_current_filt_encode(current);
+    int64_t msg = sensor_dbc_lvbms_current_lvbms_inst_current_filt_encode(current);
     if (!core_CAN_add_message_to_tx_queue(CAN_SEC, SENSOR_DBC_LVBMS_CURRENT_FRAME_ID, 8, msg)) return false;
     return true;
 }

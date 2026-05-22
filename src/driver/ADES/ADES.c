@@ -71,11 +71,7 @@ bool ADES_collect_all(uint16_t *raw_cell_voltages, uint16_t *raw_chip_voltages, 
     if (!M17_read_ADES_block(0, ADES_AUXREG(0), raw_temps + temps_read, rxLen)) return false;
     temps_read += rxLen;    // Increment pointer to how many temps have been read
 
-    // uint16_t reversed_raw_chips[NUM_CHIPS];
-    // if (!M17_read_ADES_reg(ADES_READALL, ADES_BLOCKREG, reversed_raw_chips, NUM_CHIPS)) return false;
-    // for (int i = 0; i < NUM_CHIPS; i++) {
-    //     raw_chip_voltages[i] = reversed_raw_chips[NUM_CHIPS - 1 - i];
-    // }
+    if (!M17_read_ADES_reg(ADES_READALL, ADES_BLOCKREG, raw_chip_voltages, NUM_CHIPS)) return false;
 
     return true;
 }

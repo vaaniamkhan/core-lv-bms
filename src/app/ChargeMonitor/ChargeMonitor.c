@@ -17,24 +17,26 @@
 static ChargeState_e state;
 static uint16_t bal_arr[NUM_CHIPS] = {0};
 static unsigned long settling_start = 0;
+static uint8_t samples = 0;
+static bool chg_state = false;
 
 bool ChargeMonitor_init()
 {
     core_GPIO_digital_write(CHG_ENA_PORT, CHG_ENA_PIN, false);
 
-    if (core_GPIO_digital_read(CHG_IN_PORT, CHG_IN_PIN)) {
-        ChargeMonitor_set_state(ChargeState_CONNECTED_CHARGING);
-        return true;
-    }       
     ChargeMonitor_set_state(ChargeState_DISCONNECTED);
     return false;
 }
 
 bool ChargeMonitor_task_update()
 {
-    if ((state != ChargeState_DISCONNECTED) && (!core_GPIO_digital_read(CHG_IN_PORT, CHG_IN_PIN))) {
-        FaultManager_set_err(ERR_CHARGING_DISCONNECTED, 0);
+    if (core_GPIO_digital_read(CHG_IN_PORT, CHG_IN_PIN) != chg_state) {
+        if (++samples >= CHG_IN_SAMPLES) {
+            chg_state = !chg_state;
+            state = chg_state ? ChargeState_CONNECTED : ChargeState_DISCONNECTED;
+        }
     }
+    else samples = 0;
 
     switch(state)
     {

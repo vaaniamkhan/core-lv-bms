@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 
+#define CHG_IN_SAMPLES 5
+
 typedef enum {
     ChargeState_DISCONNECTED,
     ChargeState_CONNECTED,

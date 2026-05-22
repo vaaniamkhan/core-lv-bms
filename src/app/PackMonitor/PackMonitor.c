@@ -123,13 +123,13 @@ bool PackMonitor_task_update()
 static void get_cell_volts() 
 {
     bool rational = true;
+    bool low = false;
     float cell_volt = 0.0f;
     
     for (int cell = 0; cell < NUM_CELLS; cell++) 
     {
         cell_volt = (ADES_CELL_ADC_RANGE_V * (raw_cell_volts[cell] >> 2)/ADES_ADC_RANGE);
 
-        
         rprintf("Cell %d: %d\n", cell, (int)(cell_volt * 1000));
         rprintf("Raw cell %d: %d\n", cell, raw_cell_volts[cell]);
         
@@ -141,35 +141,33 @@ static void get_cell_volts()
             if (cell_volt > max_cell_volt) max_cell_volt = cell_volt;
             else if (cell_volt < min_cell_volt) min_cell_volt = cell_volt;
             
-            if (cell_volt <= CELL_MIN_V) FaultManager_set_fault(FAULT_OUT_OF_JUICE);
-            // if (cell_volt >= CELL_MIN_V) core_timeout_reset(&out_of_juice_timeout);
+            if (cell_volt <= CELL_VOLT_IRR_LOW_V) rational = false;
             
-        }
-        
+        }        
         sum_cell_volt += cell_volt_arr[cell];
     }
     
     rprintf("----------------------------------------\n\n");
-    
-    if (!rational) FaultManager_set_fault(FAULT_CELL_VOLT_IRR);
-    // if (rational) core_timeout_reset(&cell_volt_irr_timeout);
+    rprintf("Min: %d\n", (int)(min_cell_volt * 1000));
+    rprintf("----------------------------------------\n\n");
+
+    if (rational) core_timeout_reset(&cell_volt_irr_timeout);
+    if (min_cell_volt >= CELL_MIN_V) core_timeout_reset(&out_of_juice_timeout);
 }
 
 static void get_cell_volt_diff()
 {
     cell_volt_diff = max_cell_volt - min_cell_volt;
-    // if (cell_volt_diff <= CELL_MAX_DIFF_V) core_timeout_reset(&voltage_diff_timeout);
-    if (cell_volt_diff >= CELL_MAX_DIFF_V) FaultManager_set_fault(FAULT_VOLTAGE_DIFF);
+    if (cell_volt_diff <= CELL_MAX_DIFF_V) core_timeout_reset(&voltage_diff_timeout);
 }
 
 static void get_chip_volt()
-{ 
-    
+{  
     chip_volt = (ADES_VBLK_ADC_RANGE_V * (raw_chip_volts[0] >> 2)/ADES_ADC_RANGE);
     rprintf("Chip: %d\n", (int)(chip_volt * 1000));
 
-    if ((chip_volt < VBLK_IRR_LOW_V) || (chip_volt > VBLK_IRR_HIGH_V)) FaultManager_set_fault(FAULT_CHIP_VOLT_IRR);
-    // if ((chip_volt > VBLK_IRR_LOW_V) || (chip_volt < VBLK_IRR_HIGH_V)) core_timeout_reset(&chip_volt_irr_timeout);
+    // if ((chip_volt < VBLK_IRR_LOW_V) || (chip_volt > VBLK_IRR_HIGH_V)) FaultManager_set_fault(FAULT_CHIP_VOLT_IRR);
+    if ((chip_volt > VBLK_IRR_LOW_V) || (chip_volt < VBLK_IRR_HIGH_V)) core_timeout_reset(&chip_volt_irr_timeout);
     else chip_volt_arr[0] = chip_volt;
         
     rprintf("----------------------------------------\n\n");
@@ -199,11 +197,11 @@ static bool get_cell_temps()
         sum_temp += temp;
     }
 
-    if (!rational) FaultManager_set_fault(FAULT_TEMP_IRR);
-    if (overtemp) FaultManager_set_fault(FAULT_OVERTEMP);
+    // if (!rational) FaultManager_set_fault(FAULT_TEMP_IRR);
+    // if (overtemp) FaultManager_set_fault(FAULT_OVERTEMP);
     
-    // if (rational) core_timeout_reset(&temp_irr_timeout);
-    // if (!overtemp) core_timeout_reset(&overtemp_timeout);
+    if (rational) core_timeout_reset(&temp_irr_timeout);
+    if (!overtemp) core_timeout_reset(&overtemp_timeout);
     rprintf("----------------------------------------\n\n");
     return true;
     
