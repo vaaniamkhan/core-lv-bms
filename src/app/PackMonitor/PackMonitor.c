@@ -180,7 +180,7 @@ static bool get_cell_temps()
     
     for (int therm = 0; therm < NUM_THERMS; therm++) {
         
-        float voltage = ADES_AUX_ADC_RANGE_V * (raw_temps[0] >> 2)/ADES_ADC_RANGE;
+        float voltage = ADES_AUX_ADC_RANGE_V * (raw_temps[therm] >> 2)/ADES_ADC_RANGE;
         float res = (voltage)/((ADES_THERM_V - voltage) / THERM_R1_R);          // Transfer function for Voltage -> Resistance
         float temp = 0.0f;
         if (res == 0) return false;

@@ -36,9 +36,8 @@ bool CAN_send_pack_data()
     bool ret = true;
     uint64_t packdata_msg = 0;
 
-    ChargeState_e charge_state = ChargeMonitor_get_state();
     sec_bus.pack_data.lvbms_chip_voltage = chip_volt;
-    sec_bus.pack_data.lvbms_charge_state = (int)charge_state;
+    sec_bus.pack_data.lvbms_charge_state = (int)PowerManager_get_state();
     // sec_bus.pack_data.lvbms_drain_status_0 = drain_status_0;     // get drain status
     sensor_dbc_lvbms_pack_data_full_encode((uint8_t *)&packdata_msg, &sec_bus.pack_data, 8);
     if (!core_CAN_add_message_to_tx_queue(CAN_SEC, SENSOR_DBC_LVBMS_PACK_DATA_FRAME_ID, 8, packdata_msg)) ret = false;

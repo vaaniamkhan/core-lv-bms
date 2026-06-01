@@ -17,7 +17,7 @@ void FaultManager_set_fault(uint64_t faultCode)
         faultList |= faultCode;
         if (!(faultList & ignoreList)) {
             faultList |= FAULT_SHUTDOWN;
-            LV_shutdown();
+            //LV_shutdown();
             CAN_send_faults_errors(faultList, errorList);
         }
     }
@@ -37,5 +37,13 @@ void FaultManager_task_update() {
     CAN_send_faults_errors(faultList, errorList);
 }
 
+uint64_t FaultManager_read() {
+    return faultList;
+}
+
+void FaultManager_reset_voltage_faults() {
+    faultList &= ~(FAULT_OUT_OF_JUICE | FAULT_VOLTAGE_DIFF);
+    if (faultList == FAULT_SHUTDOWN) faultList = 0;
+}
 
 void FaultManager_LSSM(uint8_t lssmByte) {}

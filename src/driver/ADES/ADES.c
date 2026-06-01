@@ -148,7 +148,7 @@ static bool scan()
     unsigned long t = 0;
     uint8_t num_transmits = 0;
     uint16_t scanBuf[NUM_CHIPS];
-    if (ChargeMonitor_get_state() == ChargeState_CONNECTED_BALANCING)
+    if (ChargeMonitor_is_balancing())
     {
         // if (!M17_write_ADES_reg(ADES_WRITEALL, ADES_SCANCTRL, AMENDFILT | RDFILT)) return false;
         // return true;

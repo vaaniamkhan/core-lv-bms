@@ -13,6 +13,7 @@ void GPIO_init()
     core_GPIO_init(LV_ENA_PORT, LV_ENA_PIN, GPIO_MODE_OUTPUT_PP, GPIO_PULLDOWN);
     core_GPIO_init(CHG_ENA_PORT, CHG_ENA_PIN, GPIO_MODE_OUTPUT_PP, GPIO_PULLDOWN);
     core_GPIO_init(CHG_IN_PORT, CHG_IN_PIN, GPIO_MODE_INPUT, GPIO_PULLDOWN);
+    core_GPIO_init(PG_PORT, PG_PIN, GPIO_MODE_INPUT, GPIO_PULLUP);
     
     core_GPIO_digital_write(LED1_PORT, LED1_PIN, false);
     core_GPIO_digital_write(LED2_PORT, LED2_PIN, false);

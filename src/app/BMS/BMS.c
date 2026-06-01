@@ -53,8 +53,9 @@ bool LVBMS_init()
 
 bool LVBMS_1Hz()
 {
-    ChargeMonitor_task_update();
+    if (ChargeMonitor_is_charging()) FaultManager_reset_voltage_faults();
     PackMonitor_task_update();
+    PowerManager_state_machine();
     FaultManager_task_update();
     return true;
 }

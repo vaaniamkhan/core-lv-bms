@@ -122,7 +122,7 @@ $(STM32_BUILD_DIR)/obj/freertos/%.c.o: $(FREERTOS_DIR)/%.c
 # core objects
 $(STM32_BUILD_DIR)/obj/core/%.c.o: $(CORE_DIR)/%.c
 	@[ -d $(@D) ] || mkdir -p $(@D)
-	$(STM32_CC) $(STM32_CC_FLAGS) -I src $(STM32CUBE_INCLUDES) $(CORE_INCLUDES) -c $< -o $@
+	$(STM32_CC) $(STM32_CC_FLAGS) -I src $(STM32CUBE_INCLUDES) $(CORE_INCLUDES) $(RTT_INCLUDES) -c $< -o $@
 
 # dbc objects
 $(STM32_BUILD_DIR)/obj/formula_dbc/%.c.o: $(DBC_DIR)/c_files/%.c
@@ -143,3 +143,4 @@ clean:
 clean-user:
 	rm -r $(BUILD_DIR)/stm32/obj/app
 	rm -r $(BUILD_DIR)/stm32/obj/core
+	rm -r $(BUILD_DIR)/stm32/obj/driver

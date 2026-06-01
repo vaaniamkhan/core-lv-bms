@@ -11,3 +11,5 @@
 
 bool CurrentMonitor_init();
 void CurrentMonitor_task_update();
+
+extern bool CurrentMonitor_backfeeding;

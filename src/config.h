@@ -49,6 +49,8 @@
 #define CELL_MIN_V 3.1f
 #define CELL_FULL_MIN_V 4.34f
 #define CELL_FULL_MAX_V 4.35f
+//#define CELL_FULL_MIN_V 3.73f
+//#define CELL_FULL_MAX_V 3.8f
 #define CELL_VOLT_IRR_HIGH_V 4.5f
 #define TEMP_IRR_LOW_C 0.0f
 #define TEMP_IRR_HIGH_C 100.0f
@@ -78,3 +80,5 @@
 #define CS_SHUTOFF_LOW -0.08f
 #define CS_SHUTOFF_HIGH 0.08f
 #define CS_SHUTOFF_COUNT 5000
+#define CS_BACKFEED_THRESHOLD (-1.0f)
+#define CS_BACKFEED_COUNT 500

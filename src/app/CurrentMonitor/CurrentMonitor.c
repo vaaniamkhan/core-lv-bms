@@ -21,6 +21,9 @@ core_filter_t filt;
 static core_timeout_t overcurrent_timeout;
 static core_timeout_t current_irr_timeout;
 static int count = 0;
+static int backfeed_count = 0;
+
+bool CurrentMonitor_backfeeding = false;
 
 static void timeout_callback (core_timeout_t *timeout);
 
@@ -54,11 +57,23 @@ void CurrentMonitor_task_update()
     uint16_t raw_ref = 1919;
     core_ADC_read_channel(CS_PORT, CS_PIN, &raw_cs);
     core_ADC_read_channel(CS_REF_PORT, CS_REF_PIN, &raw_ref);
-    rprintf("Raw CS: %d, Raw ref: %d, Raw current: %d\n", raw_cs, raw_ref, (raw_cs - raw_ref));
+    //rprintf("Raw CS: %d, Raw ref: %d, Raw current: %d\n", raw_cs, raw_ref, (raw_cs - raw_ref));
     float current = ((raw_cs - raw_ref) * 0.00899277f) - 0.0207157f;
-    if ((current > CS_SHUTOFF_LOW) && (current < CS_SHUTOFF_HIGH)) count++;
-    else count = ((count > 100) ? (count - 10) : 0);
-    if (count > CS_SHUTOFF_COUNT) core_GPIO_digital_write(STM_ENA_PORT, STM_ENA_PIN, 0);
+    //rprintf("Current: %d\n", (int)(current*1000));
+    if ((current > CS_SHUTOFF_LOW) && (current < CS_SHUTOFF_HIGH) && GPIO_PG_state()) {
+        count++;
+        //rprintf("count %d\n", count);
+    }else count = ((count > 100) ? (count - 10) : 0);
+    if (count > CS_SHUTOFF_COUNT) GPIO_set_STM(0);
+
+    if (current < CS_BACKFEED_THRESHOLD) {
+        if (backfeed_count < CS_BACKFEED_COUNT) backfeed_count++;
+        else CurrentMonitor_backfeeding = true;
+    } else {
+        backfeed_count = 0;
+        CurrentMonitor_backfeeding = false;
+    }
+
 
     // calibrate current
 

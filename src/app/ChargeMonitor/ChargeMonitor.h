@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #define CHG_IN_SAMPLES 5
 
@@ -15,6 +16,9 @@ typedef enum {
 } ChargeState_e;
 
 bool ChargeMonitor_init();
-bool ChargeMonitor_task_update();
-void ChargeMonitor_set_state(ChargeState_e);
-ChargeState_e ChargeMonitor_get_state();
+//bool ChargeMonitor_task_update();
+//void ChargeMonitor_set_state(ChargeState_e);
+uint8_t PowerManager_get_state();
+bool PowerManager_state_machine();
+bool ChargeMonitor_is_balancing();
+bool ChargeMonitor_is_charging();

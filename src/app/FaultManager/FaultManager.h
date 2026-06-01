@@ -43,3 +43,5 @@ void FaultManager_set_fault(uint64_t faultCode);
 void FaultManager_set_err(uint64_t errorCode, uint8_t tier);
 void FaultManager_LSSM(uint8_t lssmByte);
 void FaultManager_task_update();
+uint64_t FaultManager_read();
+void FaultManager_reset_voltage_faults();
